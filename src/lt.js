@@ -50,7 +50,6 @@ export default class LearningTasks extends React.Component {
     
 
     handleSortChange = (sort, sort_type = null) => {
-        let sort_type;
         if (sort === "name") {
             if (this.state.name_sort === true) {
                 sort_type = this.state.name_sort_type === 0 ? 1 : 0
