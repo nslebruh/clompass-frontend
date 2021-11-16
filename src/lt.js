@@ -1,6 +1,4 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import {Offcanvas, Image, ListGroup, DropdownButton, Dropdown, Button} from 'react-bootstrap';
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
@@ -13,6 +11,8 @@ export default class LearningTasks extends React.Component {
         this.late = 0;
         this.pending = 0;
         this.classes = [];
+        this.data = props.data;
+        this.renderType = props.renderType
         for (var i = 0; i < props.data.length; i++) {
             this.offcanvasList[props.data[i].id] = false;
         }
@@ -21,42 +21,68 @@ export default class LearningTasks extends React.Component {
                 this.classes.push(props.data[i].subject_code);
             }
         }
-        if (props.renderType !== "overdue") {
-            for (i = 0; i < this.props.data.length; i++) {
-                if (props.data[i].submission_status === "Overdue") {
-                    this.overdue++
-                } else if (props.data[i].submission_status === "Pending") {
-                    this.pending++
-                } else if (props.data[i].submission_status === "On time") {
-                    this.ontime++
-                } else if (props.data[i].submission_status === "Recieved late") {
-                    this.late++
-                }
+        for (i = 0; i < this.props.data.length; i++) {
+            if (props.data[i].submission_status === "Overdue") {
+                this.overdue++
+            } else if (props.data[i].submission_status === "Pending") {
+                this.pending++
+            } else if (props.data[i].submission_status === "On time") {
+                this.ontime++
+            } else if (props.data[i].submission_status === "Recieved late") {
+                this.late++
             }
         }
         this.state = {
-            data: props.data,
-            renderType: props.renderType,
             offcanvasList: this.offcanvasList,
-            overdue: (props.renderType !== "overdue" ? this.overdue : null),
-            ontime: (props.renderType !== "overdue" ? this.ontime : null),
-            late: (props.renderType !== "overdue" ? this.late : null),
-            pending: (props.renderType !== "overdue" ? this.pending : null),
-            sort: false,
-            sortType: false,
-            sort2: 0,
-            classes: this.classes,
+            subject_sort: false,
+            subject_sort_type: '',
+            name_sort: false,
+            name_sort_type: 0,
+            date_sort: false,
+            date_sort_type: 0,
+            status_sort: false,
+            status_sort_type: '',
+            empty_tasks: false,
+
         }
         this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit", second: "2-digit"};
     }
-    handleSortChange = (sort, sortType, sortType2 = 0) => {
-        if (this.state.sort === sort && sortType === false) {
-            var sortType2 = this.state.sortType2 === 0 ? 1 : 0;
-            this.setState({sortType2: sortType2})
-        } else {
-            this.setState({sort: sort, sortType: sortType, sortType2: sortType2})
+    
+
+    handleSortChange = (sort, sort_type = null) => {
+        let sort_type;
+        if (sort === "name") {
+            if (this.state.name_sort === true) {
+                sort_type = this.state.name_sort_type === 0 ? 1 : 0
+                this.setState({name_sort_type: sort_type})
+            } else {
+                this.setState({name_sort: true})
+            }
         }
+        if (sort === "date") {
+            if (this.state.date_sort === true) {
+                sort_type = this.state.date_sort_type === 0 ? 1 : 0
+                this.setState({date_sort_type: sort_type})
+            } else {
+                this.setState({date_sort: true})
+            }
+        }
+        if (sort === "subject") {
+            if (this.state.subject_sort === true) {
+                this.setState({subject_sort: false})
+            } else {
+                this.setState({subject_sort: true, subject_sort_type: sort_type})
+            }
+        }
+        if (sort === "status") {
+            if (this.state.status_sort === true) {
+                this.setState({status_sort: false})
+            } else {
+                this.setState({status_sort: true, status_sort_type: sort_type})
+            }
+        } 
     }
+
     handleOffcanvasChange = (id) => {
         this.setState(prevState => ({
             offcanvasList: {                   
@@ -66,22 +92,22 @@ export default class LearningTasks extends React.Component {
         }))
     }
     renderTasks = () => {
-        let tasks = this.sortTasks(this.state.data, this.state.sort, this.state.sortType, this.state.sort2)
+        let tasks = this.sortTasks();
         return (
             <div>
-                {`You currently have ${this.state.overdue} overdue learning tasks`}
+                {`You currently have ${this.overdue} overdue learning tasks`}
                 <br/>
-                {`You currently have ${this.state.late} late learning tasks`}
+                {`You currently have ${this.late} late learning tasks`}
                 <br/>
-                {`You currently have ${this.state.pending} pending learning tasks`}
+                {`You currently have ${this.pending} pending learning tasks`}
                 <br/>
-                {`You currently have ${this.state.ontime} on time learning tasks`}
+                {`You currently have ${this.ontime} on time learning tasks`}
                 <br/>
-                <Button type="button" onClick={() => this.handleSortChange("name", false)}>Sort by name</Button>
-                <Button type="button" onClick={() => this.setState({sort: false, sortType: false, sort2: 0})}>Reset sort</Button>
-                <Button type="button" onClick={() => this.handleSortChange("date", false)}>Sort by date</Button>
+                <Button type="button" onClick={() => this.handleSortChange("name")}>Sort by name</Button>
+                <Button type="button" onClick={() => this.setState({subject_sort: false, subject_sort_type: '', name_sort: false, name_sort_type: 0, date_sort: false, date_sort_type: 0, status_sort: false, status_sort_type: '', empty_tasks: false,})}>Reset sort</Button>
+                <Button type="button" onClick={() => this.handleSortChange("date")}>Sort by date</Button>
                 <DropdownButton id="class-sort" title="Sort by class">
-                    {this.state.classes.map((class_code, index) => 
+                    {this.classes.map((class_code, index) => 
                         <Dropdown.Item onClick={() => this.handleSortChange(class_code, "class")} key={index}>
                             {class_code}
                         </Dropdown.Item>
@@ -89,13 +115,13 @@ export default class LearningTasks extends React.Component {
                 </DropdownButton>
                 <DropdownButton id="status-sort" title="Sort by submission status">
                     {["Pending", "On time", "Recieved late", "Overdue"].map((status, index) => 
-                        <Dropdown.Item onClick={() => this.handleSortChange(status, "status")}>
+                        <Dropdown.Item onClick={() => this.handleSortChange("status", status)}>
                             {status}
                         </Dropdown.Item>
                     )}
                 </DropdownButton>
                 <div className="list-group list-group-flush border-bottom scrollarea">
-                    {tasks.map((task, index) => (
+                    {this.state.empty_tasks ? "No tasks" : tasks.map((task, index) => (
                         <a key={index} href={"#offcanvas" + index} className="list-group-item list-group-item-action lh-tight" data-bs-target={"#offcanvas" + index} data-bs-toggle="offcanvas">
                             <div className="d-flex w-100 align-items-center justify-content-between">
                                 <strong className="mb-1">
@@ -122,44 +148,70 @@ export default class LearningTasks extends React.Component {
         </div>
         )
     }
-    sortTasks = (data, sort, sortType, sort2) => {
-        let task;
-        let tasks;
-        if (sortType === "status") {
-            tasks = data.filter(i => {
-                return i.submission_status === sort
-            })
-        } else if (sortType === "class") {
-            tasks = data.filter(i => {
-                return i.subject_code === sort
-            })
-        } else if (sortType === "date") {
-            if (sort2 === 0) {
-                tasks = this.state.data.sort((a,b) => 
-                    (a.individual_due_date < b.individual_due_date) - (a.individual_due_date > b.individual_due_date)
-                )
-            } else {
-                tasks = this.state.data.sort((a,b) => 
-                    (a.individual_due_date > b.individual_due_date) - (a.individual_due_date < b.individual_due_date)
-                )
+    sortTasks = () => {
+        let tasks = this.data;
+        if (this.state.empty_tasks) {
+            return
+        }
+        if (tasks.length !== 0) {
+            if (this.state.subject_sort) {
+                if (this.state.subject_sort_type !== "") {
+                    tasks = tasks.filter(i => {
+                        return i === this.state.subject_sort_type;
+                    })
+                }
             }
-        } else if (sortType === "name") {
-            if (sort2 === 0) {
-                tasks = this.state.data.sort((a,b) => 
-                    (a.name < b.name) - (a.name > b.name)
-                ) 
-            } else {
-                tasks = this.state.data.sort((a,b) => 
-                    (a.name > b.name) - (a.name < b.name)
-                ) 
-            }              
+            if (this.state.status_sort) {
+                if (tasks.length !== 0) {
+                    if (this.state.status_sort_type !== "") {
+                        tasks = tasks.filter(i => {
+                            return i === this.state.status_sort_type;
+                        })
+                    }
+                } else {
+                    this.setState({empty_tasks: true})
+                }
+            }
+            if (this.state.name_sort) {
+                if (tasks.length !== 0) {
+                    if (this.state.name_sort_type === 0) {
+                        tasks = tasks.sort((a,b) => 
+                        (a.name < b.name) - (a.name > b.name)
+                    ) 
+                    } else {
+                        tasks = tasks.sort((a, b) => 
+                        (a.name > b.name) - (a.name < b.name)
+                        )
+                    }
+                } else {
+                    this.setState({empty_tasks: true})
+                }
+                
+            }
+            if (this.state.date_sort) {
+                if (tasks.legnth !== 0) {
+                    if (this.state.date_sort_type === 0) {
+                        tasks = tasks.sort((a, b) => 
+                            (a.individual_due_date < b.individual_due_date) - (a.individual_due_date > b.individual_due_date)
+                        )
+                        
+                    } else {
+                        tasks = tasks.sort((a, b) => 
+                        (a.individual_due_date > b.individual_due_date) - (a.individual_due_date < b.individual_due_date)
+                    )
+                        
+                    }
+                } else {
+                    this.setState({empty_tasks: true})
+                }
+            } 
         } else {
-                tasks = data;
+            this.setState({empty_tasks: true})
         }
         return tasks
     }
     renderOverdueTasks = () => {
-        let tasks = this.state.data.filter(i => {
+        let tasks = this.data.filter(i => {
             return i.submission_status === "Overdue"
         })
         return (
@@ -184,7 +236,7 @@ export default class LearningTasks extends React.Component {
         )
     }
     renderOverdueOffcanvas = () => {
-        let tasks = this.state.data.filter(i => {
+        let tasks = this.data.filter(i => {
             return i.submission_status === "Overdue"
         })
         return 
@@ -192,7 +244,7 @@ export default class LearningTasks extends React.Component {
     render() {
         return (
             <div>
-                {this.state.renderType === "overdue" ? this.renderOverdueTasks() : this.renderTasks()}
+                {this.renderType === "overdue" ? this.renderOverdueTasks() : this.renderTasks()}
             </div>
         )
     }
