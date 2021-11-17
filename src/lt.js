@@ -45,6 +45,7 @@ export default class LearningTasks extends React.Component {
             empty_tasks: false,
 
         }
+        this.statuses = ["Pending", "On time", "Recieved late", "Overdue"];
         this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit", second: "2-digit"};
     }
     
@@ -66,20 +67,12 @@ export default class LearningTasks extends React.Component {
                 this.setState({date_sort: true})
             }
         }
-        if (sort === "subject") {
-            if (this.state.subject_sort === true) {
-                this.setState({subject_sort: false})
-            } else {
-                this.setState({subject_sort: true, subject_sort_type: sort_type})
-            }
-        }
         if (sort === "status") {
-            if (this.state.status_sort === true) {
-                this.setState({status_sort: false})
-            } else {
-                this.setState({status_sort: true, status_sort_type: sort_type})
-            }
-        } 
+            this.setState({status_sort: true, status_sort_type: sort_type})
+        }
+        if (sort === "subject") {
+            this.setState({subject_sort: true, subject_sort_type: sort_type})
+        }
     }
 
     handleOffcanvasChange = (id) => {
@@ -107,14 +100,14 @@ export default class LearningTasks extends React.Component {
                 <Button type="button" onClick={() => this.handleSortChange("date")}>Sort by date</Button>
                 <DropdownButton id="class-sort" title="Sort by class">
                     {this.classes.map((class_code, index) => 
-                        <Dropdown.Item onClick={() => this.handleSortChange(class_code, "class")} key={index}>
+                        <Dropdown.Item onClick={() => this.handleSortChange("subject", class_code)} key={index}>
                             {class_code}
                         </Dropdown.Item>
                     )}
                 </DropdownButton>
                 <DropdownButton id="status-sort" title="Sort by submission status">
-                    {["Pending", "On time", "Recieved late", "Overdue"].map((status, index) => 
-                        <Dropdown.Item onClick={() => this.handleSortChange("status", status)}>
+                    {this.statuses.map((status, index) => 
+                        <Dropdown.Item onClick={() => this.handleSortChange("status", status)} key={index}>
                             {status}
                         </Dropdown.Item>
                     )}
@@ -149,65 +142,39 @@ export default class LearningTasks extends React.Component {
     }
     sortTasks = () => {
         let tasks = this.data;
-        if (this.state.empty_tasks) {
-            return
+        if (this.state.status_sort === true) {
+            tasks = tasks.filter(i => {
+                return i.submission_status === this.state.status_sort_type;
+            })
         }
-        if (tasks.length !== 0) {
-            if (this.state.subject_sort) {
-                if (this.state.subject_sort_type !== "") {
-                    tasks = tasks.filter(i => {
-                        return i === this.state.subject_sort_type;
-                    })
-                }
-            }
-            if (this.state.status_sort) {
-                if (tasks.length !== 0) {
-                    if (this.state.status_sort_type !== "") {
-                        tasks = tasks.filter(i => {
-                            return i === this.state.status_sort_type;
-                        })
-                    }
-                } else {
-                    this.setState({empty_tasks: true})
-                }
-            }
-            if (this.state.name_sort) {
-                if (tasks.length !== 0) {
-                    if (this.state.name_sort_type === 0) {
-                        tasks = tasks.sort((a,b) => 
-                        (a.name < b.name) - (a.name > b.name)
-                    ) 
-                    } else {
-                        tasks = tasks.sort((a, b) => 
-                        (a.name > b.name) - (a.name < b.name)
-                        )
-                    }
-                } else {
-                    this.setState({empty_tasks: true})
-                }
-                
-            }
-            if (this.state.date_sort) {
-                if (tasks.legnth !== 0) {
-                    if (this.state.date_sort_type === 0) {
-                        tasks = tasks.sort((a, b) => 
-                            (a.individual_due_date < b.individual_due_date) - (a.individual_due_date > b.individual_due_date)
-                        )
-                        
-                    } else {
-                        tasks = tasks.sort((a, b) => 
-                        (a.individual_due_date > b.individual_due_date) - (a.individual_due_date < b.individual_due_date)
-                    )
-                        
-                    }
-                } else {
-                    this.setState({empty_tasks: true})
-                }
-            } 
-        } else {
-            this.setState({empty_tasks: true})
+        if (this.state.subject_sort === true) {
+            tasks = tasks.filter(i => {
+                return i.subject_code === this.state.subject_sort_type;
+            })
         }
-        return tasks
+        if (this.state.name_sort) {
+            if (this.state.name_sort_type === 0) {
+                tasks = tasks.sort((a,b) => 
+                    (a.name < b.name) - (a.name > b.name)
+                ) 
+            } else {
+                tasks = tasks.sort((a,b) => 
+                    (a.name > b.name) - (a.name < b.name)
+                ) 
+            }       
+        }
+        if (this.state.date_sort) {
+            if (this.state.date_sort_type === 0) {
+                tasks = tasks.sort((a,b) => 
+                    (a.individual_due_date < b.individual_due_date) - (a.individual_due_date > b.individual_due_date)
+                )
+            } else {
+                tasks = tasks.sort((a,b) => 
+                    (a.individual_due_date > b.individual_due_date) - (a.individual_due_date < b.individual_due_date)
+                )
+            }
+        }
+        return tasks;
     }
     renderOverdueTasks = () => {
         let tasks = this.data.filter(i => {
