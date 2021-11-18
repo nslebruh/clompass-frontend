@@ -10,6 +10,7 @@ class Test extends React.Component {
         super(props);
         this.state = {
             loggedIn: false,
+            loggingIn: false, 
             username: '',
             password: '',
             show: false,

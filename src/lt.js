@@ -43,8 +43,6 @@ export default class LearningTasks extends React.Component {
             date_sort_type: 0,
             status_sort: false,
             status_sort_type: '',
-            empty_tasks: false,
-
         }
         this.statuses = ["Pending", "On time", "Recieved late", "Overdue"];
         this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit", second: "2-digit"};
@@ -114,7 +112,7 @@ export default class LearningTasks extends React.Component {
                     )}
                 </DropdownButton>
                 <ListGroup variant="flush" className="border-bottom scrollarea">
-                    {this.state.empty_tasks ? "No tasks" : tasks.map((task, index) => (
+                    {tasks.length <= 0 ? "No tasks" : tasks.map((task, index) => (
                         <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)}>
                             <div className="d-flex w-100 align-items-center justify-content-between">
                                 <strong className="mb-1">
