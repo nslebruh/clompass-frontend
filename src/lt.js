@@ -234,7 +234,27 @@ export default class LearningTasks extends React.Component {
                         <Offcanvas.Title>{task.name}</Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
+                            {task.subject_name} - {task.subject_code}
+                            <br/>
+                            Submission status: {task.submission_status}
+                            <br/>
+                            Due date: {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
+                            <br/>
+                            <br/>
+                            Description:
+                            <br/>
                             {Parse(task.description)}
+                            <br/>
+                            <br/>
+                            {task.attachments !== "None" ? task.attachments.map((attachment, index) => 
+                                <a key={index} href={attachment.link}>{attachment.name}</a>
+                            ) : "No attachments"}
+                            <br/>
+                            <br/>
+                            {task.submissions !== "None" ? task.submissions.map((submission, index) => 
+                                <a key={index }href={submission.link}>{submission.name}</a>
+                            ) : "No submissions"}
+
                         </Offcanvas.Body>
                     </Offcanvas>
                 )}

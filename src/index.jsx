@@ -176,22 +176,24 @@ class Test extends React.Component {
         return (
             <Router>
                 {this.state.navbar ? this.studentNavbar() : this.visitorNavbar()}
-                {!this.state.navbar ? (<Offcanvas show={this.state.show} onHide={this.handleClose}>
-                    <Offcanvas.Header closeButton>
-                      <Offcanvas.Title>Log in</Offcanvas.Title>
-                    </Offcanvas.Header>
-                    <Offcanvas.Body>
-                      <Form>
-                        <Form.Label>Username</Form.Label>
-                        <Form.Control type="text" placeholder="Username" name="username" id="username" onChange={this.handleChange}></Form.Control>
-                        <br/>
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="password" name="password" id="password" onChange={this.handleChange}></Form.Control>
-                        <br/>
-                        {this.state.loggingIn ? <Button disabled><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/></Button> : this.state.loggedIn ? <Button disabled>Log In</Button> : <Button variant="primary" type="button" onClick={() => this.loggingIn()}>Log in</Button>}
-                      </Form>
-                    </Offcanvas.Body>
-                </Offcanvas>) : null}
+                {!this.state.navbar ? (
+                    <Offcanvas show={this.state.show} onHide={this.handleClose}>
+                        <Offcanvas.Header closeButton>
+                          <Offcanvas.Title>Log in</Offcanvas.Title>
+                        </Offcanvas.Header>
+                        <Offcanvas.Body>
+                          <Form>
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control type="text" placeholder="Username" name="username" id="username" onChange={this.handleChange}></Form.Control>
+                            <br/>
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control type="password" placeholder="password" name="password" id="password" onChange={this.handleChange}></Form.Control>
+                            <br/>
+                            {this.state.loggingIn ? <Button disabled><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/></Button> : this.state.loggedIn ? <Button disabled>Log In</Button> : <Button variant="primary" type="button" onClick={() => this.loggingIn()}>Log in</Button>}
+                          </Form>
+                        </Offcanvas.Body>
+                    </Offcanvas>
+                ) : null}
                 <Switch>
                     <Route exact path="/about">
                         {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.about()}
