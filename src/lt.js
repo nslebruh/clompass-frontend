@@ -149,12 +149,35 @@ export default class LearningTasks extends React.Component {
                     <Offcanvas.Title>{task.name}</Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
-                        Due date: {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
-                        <br/>
-                        <br/>
-                        Description: 
-                        <br/>
-                        {Parse(task.description)}
+                    Subject: {task.subject_name} - {task.subject_code}
+                            <br/>
+                            Submission status: {task.submission_status}
+                            <br/>
+                            Due date: {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
+                            <br/>
+                            <br/>
+                            Description:
+                            <br/>
+                            {Parse(task.description)}
+                            <br/>
+                            <br/>
+                            Attachments: {task.attachments === "None" ? "None" : null}
+                            {task.attachments !== "None" ? task.attachments.map((attachment, index) => 
+                                <div>
+                                    <a key={index} href={attachment.link}>{attachment.name}</a>
+                                    <br/>
+                                </div>
+                                ) : null}
+                            
+                            <br/>
+                            <br/>
+                            Submissions: {task.submissions === "None" ? "None" : null}
+                            {task.submissions !== "None" ? task.submissions.map((submission, index) => 
+                                <div>
+                                    <a key={index }href={submission.link}>{submission.name}</a>
+                                    <br/>
+                                </div>
+                            ) : null}
                     </Offcanvas.Body>
                 </Offcanvas>
                 )}
