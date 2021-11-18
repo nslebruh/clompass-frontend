@@ -45,7 +45,7 @@ export default class LearningTasks extends React.Component {
             status_sort_type: '',
         }
         this.statuses = ["Pending", "On time", "Recieved late", "Overdue"];
-        this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit", second: "2-digit"};
+        this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit"};
     }
     
 
@@ -85,7 +85,7 @@ export default class LearningTasks extends React.Component {
     renderTasks = () => {
         let tasks = this.sortTasks();
         return (
-            <div>
+            <div className="container">
                 {`You currently have ${this.overdue} overdue learning tasks`}
                 <br/>
                 {`You currently have ${this.late} late learning tasks`}
@@ -130,7 +130,7 @@ export default class LearningTasks extends React.Component {
                                     <small>
                                         {"Submission Status: " + task.submission_status}
                                     </small>
-                                    <img src={task.submission_svg_link} alt={task.submission_status} width="25" height="25"/>
+                                    <Image src={task.submission_svg_link} alt={task.submission_status} width="25" height="25"/>
                                 </span>
                             </div> 
                         </ListGroup.Item>
@@ -149,6 +149,11 @@ export default class LearningTasks extends React.Component {
                     <Offcanvas.Title>{task.name}</Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
+                        Due date: {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
+                        <br/>
+                        <br/>
+                        Description: 
+                        <br/>
                         {Parse(task.description)}
                     </Offcanvas.Body>
                 </Offcanvas>
@@ -208,7 +213,7 @@ export default class LearningTasks extends React.Component {
                                 </div>
                                 <div className="d-flex w-100 align-items-center justify-content-between text-center">
                                     <div className="mb-1">
-                                        Due by {task.individual_due_date}
+                                        Due by {new Date(task.individual_due_date).toLocaleDateString("en-us", this.options)}
                                     </div>
                                 </div> 
                         </ListGroup.Item>

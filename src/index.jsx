@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
-import { Navbar, Nav, Form, Button, Dropdown, Offcanvas, Image, ListGroup, DropdownButton, Container, Row, Col } from 'react-bootstrap';
+import { Navbar, Nav, Form, Button, Offcanvas, Image, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { LinkContainer } from "react-router-bootstrap";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import LearningTasks from './lt';
@@ -15,13 +15,14 @@ class Test extends React.Component {
             password: '',
             show: false,
             navbar: false,
-            data : [],
-            ltSort: '',
-            ltSortType: 0,
+            data: [],
         };
         this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit", second: "2-digit"};
     }
 
+    loggingIn = () => {
+        this.setState({loggingIn: true})
+    }
     handleShow = () => {
         this.setState({ show: true });
     }
@@ -33,7 +34,7 @@ class Test extends React.Component {
     handleSubmit = () => {
         fetch(`https://clompass-backend.herokuapp.com/puppeteer?username=${this.state.username}&password=${this.state.password}`)
         .then(res => res.json())
-        .then(data => this.setState({data: data, loggedIn: true, navbar: true, show: false}))
+        .then(data => this.setState({data: data, loggedIn: true, navbar: true, show: false, loggingIn: false}))
     }
     
     handleChange = (event) => {
@@ -131,50 +132,6 @@ class Test extends React.Component {
             </div>
         )
     }
-    learningtasks = () => {
-        let overdue = 0;
-        let pending = 0;
-        let ontime = 0;
-        let late = 0;
-        for (var i = 0; i < this.state.data.length; i++) {
-            if (this.state.data[i].submission_status === "Overdue") {
-                overdue++
-            } else if (this.state.data[i].submission_status === "Pending") {
-                pending++
-            } else if (this.state.data[i].submission_status === "On time") {
-                ontime++
-            } else if (this.state.data[i].submission_status === "Recieved late") {
-                late++
-            }
-        }
-        return (
-            <div>
-                <h1>Learning Tasks</h1>
-                You currently have {overdue} overdue tasks
-                <br/>
-                You currently have {pending} pending tasks
-                <br/>
-                You currently have {late} tasks submitted late
-                <br/>
-                You currently have {ontime} tasks submitted on time
-                <br/>
-                <Button type="button" onClick={() => {console.log("sorting by date");this.handleltSortChange("date")}}>Sort by date</Button>
-                <Button type="button" onClick={() => {console.log("sorting by name");this.handleltSortChange("name")}}>Sort by name</Button>
-                <Dropdown>
-                    <Dropdown.Toggle variant="success" id="dropdown-basic">
-                        Dropdown Button
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
-                {this.renderLearningTasks()}
-            </div>
-        )
-    }
     studentinfo = () => {
         return (
             <div>
@@ -213,6 +170,9 @@ class Test extends React.Component {
         );
     }
     render() {
+        if (this.state.loggingIn) {
+            this.handleSubmit()
+        }
         return (
             <Router>
                 {this.state.navbar ? this.studentNavbar() : this.visitorNavbar()}
@@ -228,7 +188,7 @@ class Test extends React.Component {
                         <Form.Label>Password</Form.Label>
                         <Form.Control type="password" placeholder="password" name="password" id="password" onChange={this.handleChange}></Form.Control>
                         <br/>
-                        <Button variant="primary" type="button" onClick={() => this.handleSubmit()}>Log in</Button>
+                        {this.state.loggingIn ? <Button disabled><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/></Button> : this.state.loggedIn ? <Button disabled>Log In</Button> : <Button variant="primary" type="button" onClick={() => this.loggingIn()}>Log in</Button>}
                       </Form>
                     </Offcanvas.Body>
                 </Offcanvas>) : null}
