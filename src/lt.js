@@ -1,6 +1,7 @@
 import React from 'react';
 import {Offcanvas, Image, ListGroup, DropdownButton, Dropdown, Button} from 'react-bootstrap';
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import Parse from 'html-react-parser';
 
 export default class LearningTasks extends React.Component {
     constructor(props) {
@@ -75,11 +76,11 @@ export default class LearningTasks extends React.Component {
         }
     }
 
-    handleOffcanvasChange = (id) => {
+    handleOffcanvasChange = (id, change) => {
         this.setState(prevState => ({
             offcanvasList: {                   
                 ...prevState.offcanvasList,   
-                [id]: true      
+                [id]: change      
             }
         }))
     }
@@ -112,9 +113,9 @@ export default class LearningTasks extends React.Component {
                         </Dropdown.Item>
                     )}
                 </DropdownButton>
-                <div className="list-group list-group-flush border-bottom scrollarea">
+                <ListGroup variant="flush" className="border-bottom scrollarea">
                     {this.state.empty_tasks ? "No tasks" : tasks.map((task, index) => (
-                        <a key={index} href={"#offcanvas" + index} className="list-group-item list-group-item-action lh-tight" data-bs-target={"#offcanvas" + index} data-bs-toggle="offcanvas">
+                        <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)}>
                             <div className="d-flex w-100 align-items-center justify-content-between">
                                 <strong className="mb-1">
                                     {task.name}
@@ -134,10 +135,27 @@ export default class LearningTasks extends React.Component {
                                     <img src={task.submission_svg_link} alt={task.submission_status} width="25" height="25"/>
                                 </span>
                             </div> 
-                        </a>
+                        </ListGroup.Item>
                     ))}
-                </div>
+                </ListGroup>
         </div>
+        )
+    }
+    renderOffcanvas = () => {
+        let tasks = this.data;
+        return (
+            <div>
+                {tasks.map((task, index) => 
+                    <Offcanvas show={this.state.offcanvasList[task.id]} onHide={() => this.handleOffcanvasChange(task.id, false)} key={index}>
+                    <Offcanvas.Header closeButton>
+                    <Offcanvas.Title>{task.name}</Offcanvas.Title>
+                    </Offcanvas.Header>
+                    <Offcanvas.Body>
+                        {Parse(task.description)}
+                    </Offcanvas.Body>
+                </Offcanvas>
+                )}
+            </div>
         )
     }
     sortTasks = () => {
@@ -184,7 +202,7 @@ export default class LearningTasks extends React.Component {
             <div>
                 <ListGroup variant="flush" className="border-bottom scrollarea">
                     {tasks.map((task, index) =>
-                        <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id)} className="lh-tight">
+                        <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)} className="lh-tight">
                                 <div className="d-flex w-100 align-items-center justify-content-between">
                                     <strong className="mb-1">
                                         {task.name}
@@ -205,12 +223,26 @@ export default class LearningTasks extends React.Component {
         let tasks = this.data.filter(i => {
             return i.submission_status === "Overdue"
         })
-        return 
+        return (
+            <div>
+                {tasks.map((task, index) => 
+                    <Offcanvas show={this.state.offcanvasList[task.id]} onHide={() => this.handleOffcanvasChange(task.id, false)} key={index}>
+                        <Offcanvas.Header closeButton>
+                        <Offcanvas.Title>{task.name}</Offcanvas.Title>
+                        </Offcanvas.Header>
+                        <Offcanvas.Body>
+                            {Parse(task.description)}
+                        </Offcanvas.Body>
+                    </Offcanvas>
+                )}
+            </div>
+        ) 
     }
     render() {
         return (
             <div>
                 {this.renderType === "overdue" ? this.renderOverdueTasks() : this.renderTasks()}
+                {this.renderType === "overdue" ? this.renderOverdueOffcanvas() : this.renderOffcanvas()}
             </div>
         )
     }

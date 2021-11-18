@@ -40,14 +40,6 @@ class Test extends React.Component {
             [event.target.name]: event.target.value
         })
     }
-    handleltSortChange = (sort) => {
-        if (this.state.ltSort === sort) {
-            var sortType = this.state.ltSortType === 0 ? 1 : 0;
-            this.setState({ltSortType: sortType});
-        } else {
-            this.setState({ltSort: sort, ltSortType: 0});
-        }
-    }
     studentNavbar = () => {
         return (
             <Navbar bg="dark" variant="dark" expand="lg">
@@ -101,104 +93,6 @@ class Test extends React.Component {
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-        )
-    }
-    renderLearningTasks = () => {
-        let tasks;
-        if (this.state.ltSort === "name") {
-            if (this.state.ltSortType === 0) {
-                tasks = this.state.data.sort((a,b) => 
-                    (a.name < b.name) - (a.name > b.name)
-                ) 
-            } else {
-                tasks = this.state.data.sort((a,b) => 
-                    (a.name > b.name) - (a.name < b.name)
-                ) 
-            }              
-        } else if (this.state.ltSort === "date") {
-            if (this.state.ltSortType === 0) {
-                tasks = this.state.data.sort((a,b) => 
-                    (a.individual_due_date < b.individual_due_date) - (a.individual_due_date > b.individual_due_date)
-                )
-            } else {
-                tasks = this.state.data.sort((a,b) => 
-                    (a.individual_due_date > b.individual_due_date) - (a.individual_due_date < b.individual_due_date)
-                )
-            }
-        } else {
-            tasks = this.state.data
-        }
-        return (
-            <div className="list-group list-group-flush border-bottom scrollarea">
-                {tasks.map((task, index) => (
-                    <a key={index} href={"#offcanvas" + index} className="list-group-item list-group-item-action lh-tight" data-bs-target={"#offcanvas" + index} data-bs-toggle="offcanvas">
-                        <div className="d-flex w-100 align-items-center justify-content-between">
-                            <strong className="mb-1">
-                                {task.name}
-                              </strong>
-                            <small>
-                                Due by {task.individual_due_date}
-                              </small>
-                        </div>
-                        <div className="d-flex w-100 align-items-center justify-content-betweean">
-                            <div className="mb-1">
-                                {task.subject_name} - {task.subject_code}
-                            </div>
-                            <span>
-                                <small>
-                                    {"Submission Status: " + task.submission_status}
-                                </small>
-                                <img src={task.submission_svg_link} alt={task.submission_status} width="25" height="25"/>
-                            </span>
-                        </div> 
-                    </a>
-                ))}
-        </div>
-        )
-    }
-    renderOverdueLearningTasks = () => {
-        let data = this.state.data;
-        let tasks = data.filter(i => {
-            return i.submission_status === "Overdue"
-        })
-        return (
-            <div className="list-group list-group-flush border-bottom scrollarea">
-                {tasks.map((task, index) => 
-                    <a key={index} href={"#offcanvas" + index} className="list-group-item list-group-item-action lh-tight" data-bs-target={"#offcanvas" + index} data-bs-toggle="offcanvas" aria-controls={"#offcanvas" + index}>
-                        <div className="d-flex w-100 align-items-center justify-content-between">
-                            <strong className="mb-1">
-                                {task.name}
-                              </strong>
-                        </div>
-                        <div className="d-flex w-100 align-items-center justify-content-between text-center">
-                            <div className="mb-1">
-                                Due by {task.individual_due_date}
-                            </div>
-                        </div> 
-                    </a>
-                            )}
-            </div>
-        )
-    }
-    renderOverdueLearningTasksOffcanvas = () => {
-        let data = this.state.data;
-        let tasks = data.filter(i => {
-            return i.submission_status === "Overdue"
-        })
-        return (
-            <div>
-                {tasks.map((tasks, index) => 
-                    <div class="offcanvas offcanvas-start" tabindex="-1" id={"#offcanvas" + index} aria-labelledby="offcanvasLabel">
-                        <div class="offcanvas-header">
-                          <h5 class="offcanvas-title" id="offcanvasLabel">{index}</h5>
-                          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                        </div>
-                        <div class="offcanvas-body">
-                          Content for the offcanvas goes here. You can place just about any Bootstrap component or custom elements here.
-                        </div>
-                    </div>
-                )}
-            </div>
         )
     }
     about = () => {
