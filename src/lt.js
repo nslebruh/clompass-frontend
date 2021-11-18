@@ -234,7 +234,7 @@ export default class LearningTasks extends React.Component {
                         <Offcanvas.Title>{task.name}</Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
-                            {task.subject_name} - {task.subject_code}
+                            Subject: {task.subject_name} - {task.subject_code}
                             <br/>
                             Submission status: {task.submission_status}
                             <br/>
@@ -246,14 +246,23 @@ export default class LearningTasks extends React.Component {
                             {Parse(task.description)}
                             <br/>
                             <br/>
+                            Attachments: {task.attachments === "None" ? "None" : null}
                             {task.attachments !== "None" ? task.attachments.map((attachment, index) => 
-                                <a key={index} href={attachment.link}>{attachment.name}</a>
-                            ) : "No attachments"}
+                                <div>
+                                    <a key={index} href={attachment.link}>{attachment.name}</a>
+                                    <br/>
+                                </div>
+                                ) : null}
+                            
                             <br/>
                             <br/>
+                            Submissions: {task.submissions === "None" ? "None" : null}
                             {task.submissions !== "None" ? task.submissions.map((submission, index) => 
-                                <a key={index }href={submission.link}>{submission.name}</a>
-                            ) : "No submissions"}
+                                <div>
+                                    <a key={index }href={submission.link}>{submission.name}</a>
+                                    <br/>
+                                </div>
+                            ) : null}
 
                         </Offcanvas.Body>
                     </Offcanvas>
