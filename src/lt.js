@@ -43,8 +43,11 @@ export default class LearningTasks extends React.Component {
             date_sort_type: 0,
             status_sort: false,
             status_sort_type: '',
+            type_sort: false,
+            type_sort_type: '',
         }
         this.statuses = ["Pending", "On time", "Recieved late", "Overdue"];
+        this.types = ["cat ", "pt", "hw"];
         this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit"};
     }
     
@@ -72,6 +75,9 @@ export default class LearningTasks extends React.Component {
         if (sort === "subject") {
             this.setState({subject_sort: true, subject_sort_type: sort_type})
         }
+        if (sort === "type") {
+            this.setState({type_sort: true, type_sort_type: sort_type})
+        } 
     }
 
     handleOffcanvasChange = (id, change) => {
@@ -95,8 +101,16 @@ export default class LearningTasks extends React.Component {
                 {`You currently have ${this.ontime} on time learning tasks`}
                 <br/>
                 <Button type="button" onClick={() => this.handleSortChange("name")}>Sort by name</Button>
-                <Button type="button" onClick={() => this.setState({subject_sort: false, subject_sort_type: '', name_sort: false, name_sort_type: 0, date_sort: false, date_sort_type: 0, status_sort: false, status_sort_type: '', empty_tasks: false,})}>Reset sort</Button>
+                <Button type="button" onClick={() => this.setState({subject_sort: false, subject_sort_type: '', name_sort: false, name_sort_type: 0, date_sort: false, date_sort_type: 0, status_sort: false, status_sort_type: '', empty_tasks: false, type_sort: false, type_sort_type: '',})}>Reset sort</Button>
                 <Button type="button" onClick={() => this.handleSortChange("date")}>Sort by date</Button>
+                <br/>
+                <DropdownButton id="task-type-sort" title="Sort by task type">
+                    {this.types.map((type, index) => 
+                        <Dropdown.Item onClick={() => this.handleSortChange("type", type)} key={index}>
+                            {type.toUpperCase()}
+                        </Dropdown.Item>
+                    )}
+                </DropdownButton>
                 <DropdownButton id="class-sort" title="Sort by class">
                     {this.classes.map((class_code, index) => 
                         <Dropdown.Item onClick={() => this.handleSortChange("subject", class_code)} key={index}>
@@ -111,32 +125,34 @@ export default class LearningTasks extends React.Component {
                         </Dropdown.Item>
                     )}
                 </DropdownButton>
-                <ListGroup variant="flush" className="border-bottom scrollarea">
-                    {tasks.length <= 0 ? "No tasks" : tasks.map((task, index) => (
-                        <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)}>
-                            <div className="d-flex w-100 align-items-center justify-content-between">
-                                <strong className="mb-1">
-                                    {task.name}
-                                  </strong>
-                                <small>
-                                    Due by {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
-                                  </small>
-                            </div>
-                            <div className="d-flex w-100 align-items-center justify-content-between">
-                                <div className="mb-1">
-                                    {task.subject_name} - {task.subject_code}
-                                </div>
-                                <span>
+                {tasks.length <= 0 ? "No tasks" : 
+                    <ListGroup variant="flush" className="border-bottom scrollarea">
+                        {tasks.map((task, index) => (
+                            <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)}>
+                                <div className="d-flex w-100 align-items-center justify-content-between">
+                                    <strong className="mb-1">
+                                        {task.name}
+                                      </strong>
                                     <small>
-                                        {"Submission Status: " + task.submission_status}
-                                    </small>
-                                    <Image src={task.submission_svg_link} alt={task.submission_status} width="25" height="25"/>
-                                </span>
-                            </div> 
-                        </ListGroup.Item>
-                    ))}
-                </ListGroup>
-        </div>
+                                        Due by {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
+                                      </small>
+                                </div>
+                                <div className="d-flex w-100 align-items-center justify-content-between">
+                                    <div className="mb-1">
+                                        {task.subject_name} - {task.subject_code}
+                                    </div>
+                                    <span>
+                                        <small>
+                                            {"Submission Status: " + task.submission_status}
+                                        </small>
+                                        <Image src={task.submission_svg_link} alt={task.submission_status} width="25" height="25"/>
+                                    </span>
+                                </div> 
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                }
+            </div>
         )
     }
     renderOffcanvas = () => {
@@ -196,7 +212,12 @@ export default class LearningTasks extends React.Component {
                 return i.subject_code === this.state.subject_sort_type;
             })
         }
-        if (this.state.name_sort) {
+        if (this.state.type_sort === true) {
+            tasks = tasks.filter(i => {
+                return (i.name.toLowerCase()).includes(this.state.type_sort_type);
+            })
+        }
+        if (this.state.name_sort === true) {
             if (this.state.name_sort_type === 0) {
                 tasks = tasks.sort((a,b) => 
                     (a.name < b.name) - (a.name > b.name)
@@ -207,7 +228,7 @@ export default class LearningTasks extends React.Component {
                 ) 
             }       
         }
-        if (this.state.date_sort) {
+        if (this.state.date_sort === true) {
             if (this.state.date_sort_type === 0) {
                 tasks = tasks.sort((a,b) => 
                     (a.individual_due_date < b.individual_due_date) - (a.individual_due_date > b.individual_due_date)
