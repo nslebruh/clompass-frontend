@@ -84,7 +84,7 @@ class Test extends React.Component {
                         <LinkContainer to="/about">
                             <Nav.Link>About</Nav.Link>
                         </LinkContainer>
-                        <Nav.Link onClick={this.handleShow}>Login</Nav.Link>
+                        {this.state.loggedIn !== true ? <Nav.Link onClick={this.handleShow}>Login</Nav.Link> : <Nav.Link onClick={() => {this.setState({loggedIn: false, data: [], username: '', password: ''})}}>Log out</Nav.Link>}
                         <LinkContainer to="/pricing">
                             <Nav.Link>Pricing</Nav.Link>
                         </LinkContainer>
