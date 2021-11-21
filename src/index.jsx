@@ -32,7 +32,7 @@ class Test extends React.Component {
     }
 
     handleSubmit = () => {
-        fetch(`https://clompass-backend.herokuapp.com/puppeteer?username=${this.state.username}&password=${this.state.password}`)
+        fetch(`https://api.clompass.com/puppeteer?username=${this.state.username}&password=${this.state.password}`)
         .then(res => res.json())
         .then(data => this.setState({data: data, loggedIn: true, navbar: true, show: false, loggingIn: false}))
     }
