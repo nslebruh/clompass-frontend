@@ -103,7 +103,6 @@ export default class LearningTasks extends React.Component {
                 <Button type="button" onClick={() => this.handleSortChange("name")}>Sort by name</Button>
                 <Button type="button" onClick={() => this.setState({subject_sort: false, subject_sort_type: '', name_sort: false, name_sort_type: 0, date_sort: false, date_sort_type: 0, status_sort: false, status_sort_type: '', empty_tasks: false, type_sort: false, type_sort_type: '',})}>Reset sort</Button>
                 <Button type="button" onClick={() => this.handleSortChange("date")}>Sort by date</Button>
-                <br/>
                 <DropdownButton id="task-type-sort" title="Sort by task type">
                     {this.types.map((type, index) => 
                         <Dropdown.Item onClick={() => this.handleSortChange("type", type)} key={index}>
