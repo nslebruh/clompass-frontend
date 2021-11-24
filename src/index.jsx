@@ -17,7 +17,7 @@ class Test extends React.Component {
             navbar: false,
             data: [],
         };
-        this.review =[{name: "Totally real person", image: "https://libredd.it/preview/external-pre/iQbN47Oqc8mRdHd_ecgmES2WIYPEkMP5JXdUNGbBsY0.jpg?auto=webp&s=f9ffd3abb046e377fa870a515c63bd6de7cac50d", desc: "As a totally real person, Clompass has helped me overcome my water addiction. Thank you Clompass!", helpful: "27"},{name: "even more real person", image: "https://media1.cgtrader.com/variants/Bu26ZmqBr3399MPjb9jZ83Kr/e44aa6a6359827c9089792cde0c079681b83d3b5c3037cc0525c25607e54355b/d75944ab-4691-4a56-93db-333698a7da50.jpg", desc: "Clompass cool", "helpful": "402"}];
+        this.review =[{name: "Totally real person", image: "https://libredd.it/preview/external-pre/iQbN47Oqc8mRdHd_ecgmES2WIYPEkMP5JXdUNGbBsY0.jpg?auto=webp&s=f9ffd3abb046e377fa870a515c63bd6de7cac50d", desc: "As a totally real person, Clompass has helped me overcome my water addiction. Thank you Clompass!", helpful: "27"},{name: "even more real person", image: "https://media1.cgtrader.com/variants/Bu26ZmqBr3399MPjb9jZ83Kr/e44aa6a6359827c9089792cde0c079681b83d3b5c3037cc0525c25607e54355b/d75944ab-4691-4a56-93db-333698a7da50.jpg", desc: "Clompass cool", "helpful": "402"},{name: "Barack Obama", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/800px-President_Barack_Obama.jpg", desc: "Hello it is I Barack Obama. Clompass is a great American asset.",  helpful: "The entire American population"},{name: "Vladmir Putin", image: "https://thehill.com/sites/default/files/styles/thumb_small_article/public/putinvladimir_011519getty_lead.jpg?itok=7czClh2z", desc: "Это лучший софт с тех пор, как мы вторглись в Украину.", helpful: "Ukraine"}];
         this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit", second: "2-digit"};
     }
 
@@ -55,6 +55,7 @@ class Test extends React.Component {
                             <LinkContainer to="/dashboard">
                                 <Nav.Link>Dashboard</Nav.Link>
                             </LinkContainer>
+                            <Nav.Link as="a" href="https://outlook.com/lilydaleheights.vic.edu.au" target="_blank" rel="noopener">Emails</Nav.Link>
                             <LinkContainer to="/dashboard/learningtasks">
                                 <Nav.Link>Learning Tasks</Nav.Link>
                             </LinkContainer>
