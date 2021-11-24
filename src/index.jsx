@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
-import { Navbar, Nav, Form, Button, Offcanvas, Image, Container, Row, Col, Spinner } from 'react-bootstrap';
+import { Navbar, Nav, Form, Button, Offcanvas, Image, Container, Row, Col, Spinner, Stack } from 'react-bootstrap';
 import { LinkContainer } from "react-router-bootstrap";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import LearningTasks from './lt';
@@ -17,6 +17,7 @@ class Test extends React.Component {
             navbar: false,
             data: [],
         };
+        this.review =[{name: "Totally real person", image: "https://libredd.it/preview/external-pre/iQbN47Oqc8mRdHd_ecgmES2WIYPEkMP5JXdUNGbBsY0.jpg?auto=webp&s=f9ffd3abb046e377fa870a515c63bd6de7cac50d", desc: "As a totally real person, Clompass has helped me overcome my water addiction. Thank you Clompass!", helpful: "27"},{name: "even more real person", image: "https://media1.cgtrader.com/variants/Bu26ZmqBr3399MPjb9jZ83Kr/e44aa6a6359827c9089792cde0c079681b83d3b5c3037cc0525c25607e54355b/d75944ab-4691-4a56-93db-333698a7da50.jpg", desc: "Clompass cool", "helpful": "402"}];
         this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit", second: "2-digit"};
     }
 
@@ -156,9 +157,33 @@ class Test extends React.Component {
     reviews = () => {
         return (
             <div>
-                <h1>
-                    Reviews
-                </h1>
+                <h1>Reviews</h1>
+                <Container>
+                    <Stack gap={2}>
+                    {this.review.map((review, index) => 
+                        <Row className="border">
+                            <Col sm={3}>
+                                <Image src={review.image} height="80" width="100"/>
+                                <strong>
+                                    {review.name}
+                                </strong>
+                                
+                            </Col>
+                            <Col sm={9}>
+                                <small>
+                                {review.desc}
+                                </small>
+                                <br/>
+                                <strong>
+                                    {review.helpful} found this review helpful
+                                </strong>
+                                
+                            </Col>
+                        </Row>
+
+                        )}
+                    </Stack>
+                </Container>
             </div>
         ); 
     }
