@@ -1,5 +1,5 @@
 import React from 'react';
-import {Offcanvas, Image, ListGroup, DropdownButton, Dropdown, Button} from 'react-bootstrap';
+import {Offcanvas, Image, ListGroup, DropdownButton, Dropdown, Button, Stack} from 'react-bootstrap';
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import Parse from 'html-react-parser';
 
@@ -7,76 +7,149 @@ export default class LearningTasks extends React.Component {
     constructor(props) {
         super(props);
         this.offcanvasList = {};
-        this.overdue = 0;
-        this.ontime = 0;
-        this.late = 0;
-        this.pending = 0;
-        this.classes = [];
         this.data = props.data;
-        this.renderType = props.renderType
+        this.config = {
+            statuses: ["Pending", "On time", "Recieved late", "Overdue"], 
+            types: ["cat ", "pt", "hw"], 
+            options: {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit"},
+            classes: [],
+            renderType: props.renderType,
+            status_amounts: {
+                ontime: 0,
+                overdue: 0,
+                late: 0,
+                pending: 0,
+            }
+
+        }
         for (var i = 0; i < props.data.length; i++) {
             this.offcanvasList[props.data[i].id] = false;
         }
         for (i = 0; i < props.data.length; i++) {
-            if (this.classes.includes(props.data[i].subject_code) === false) {
-                this.classes.push(props.data[i].subject_code);
+            if (this.config.classes.includes(props.data[i].subject_code) === false) {
+                this.config.classes.push(props.data[i].subject_code);
             }
         }
         for (i = 0; i < this.props.data.length; i++) {
             if (props.data[i].submission_status === "Overdue") {
-                this.overdue++
+                this.config.status_amounts.overdue++
             } else if (props.data[i].submission_status === "Pending") {
-                this.pending++
+                this.config.status_amounts.pending++
             } else if (props.data[i].submission_status === "On time") {
-                this.ontime++
+                this.config.status_amounts.ontime++
             } else if (props.data[i].submission_status === "Recieved late") {
-                this.late++
+                this.config.status_amounts.late++
             }
         }
         this.state = {
+            data: this.data,
             offcanvasList: this.offcanvasList,
-            subject_sort: false,
-            subject_sort_type: '',
-            name_sort: false,
-            name_sort_type: 0,
-            date_sort: false,
-            date_sort_type: 0,
-            status_sort: false,
-            status_sort_type: '',
-            type_sort: false,
-            type_sort_type: '',
+            sorts: {
+                subject_sort: false,
+                subject_sort_type: '',
+                name_sort: false,
+                name_sort_type: 0,
+                date_sort: false,
+                date_sort_type: 0,
+                status_sort: false,
+                status_sort_type: '',
+                type_sort: false,
+                type_sort_type: '',
+            }
+            
         }
-        this.statuses = ["Pending", "On time", "Recieved late", "Overdue"];
-        this.types = ["cat ", "pt", "hw"];
-        this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit"};
     }
     
-
-    handleSortChange = (sort, sort_type = null) => {
+    resetSort = () => {
+        this.setState({
+            sorts: {
+                subject_sort: false,
+                subject_sort_type: '',
+                name_sort: false,
+                name_sort_type: 0,
+                date_sort: false,
+                date_sort_type: 0,
+                status_sort: false,
+                status_sort_type: '',
+                type_sort: false,
+                type_sort_type: '',
+                
+            }
+        })
+    }
+    handleSortChange = (sort, sorts, sort_type = null) => {
         if (sort === "name") {
-            if (this.state.name_sort === true) {
-                sort_type = this.state.name_sort_type === 0 ? 1 : 0
-                this.setState({name_sort_type: sort_type})
+            if (sorts.name_sort === true) {
+                sort_type = sorts.name_sort_type === 0 ? 1 : 0
+                this.setState(prevState => ({
+                    sorts: {
+                        ...prevState.sorts,
+                        name_sort_type: sort_type
+                    }
+                   
+                })
+                    )
             } else {
-                this.setState({name_sort: true})
+                this.setState(prevState => ({
+                    sorts: {
+                        ...prevState.sorts,
+                        name_sort: true
+                    }
+                })
+                )
             }
         }
         if (sort === "date") {
-            if (this.state.date_sort === true) {
-                sort_type = this.state.date_sort_type === 0 ? 1 : 0
-                this.setState({date_sort_type: sort_type})
+            if (sorts.date_sort === true) {
+                sort_type = sorts.date_sort_type === 0 ? 1 : 0
+                this.setState(prevState => ({
+                    sorts: {
+                        ...prevState.sorts,
+                        date_sort_type: sort_type
+                    }
+                }))
+                    
             } else {
-                this.setState({date_sort: true})
+                this.setState(prevState => ({
+                    sorts: {
+                        ...prevState.sorts,
+                        date_sort: true
+                    }
+                }))
             }
         }
         if (sort === "status") {
-            this.setState({status_sort: true, status_sort_type: sort_type})
+            var status_sort = sorts.status_sort === true && sorts.status_sort_type === sort_type ? false : true
+            sort_type = sorts.status_sort === true && sorts.status_sort_type === sort_type ? '' : sort_type
+            this.setState(prevState => ({
+                sorts: {
+                    ...prevState.sorts,
+                    status_sort: status_sort,
+                    status_sort_type: sort_type
+                }
+            }))
         }
         if (sort === "subject") {
-            this.setState({subject_sort: true, subject_sort_type: sort_type})
+            var subject_sort = sorts.subject_sort === true && sorts.subject_sort_type === sort_type ? false : true 
+            sort_type = sorts.subject_sort === true && sorts.subject_sort_type === sort_type ? '' : sort_type
+            this.setState(prevState => ({
+                sorts: {
+                    ...prevState.sorts,
+                    subject_sort: subject_sort,
+                    subject_sort_type: sort_type
+                }
+            }))
         }
         if (sort === "type") {
-            this.setState({type_sort: true, type_sort_type: sort_type})
+            var type_sort = sorts.type_sort === true && sorts.type_sort_type === sort_type ? false : true
+            sort_type = sorts.type_sort === true && sorts.type_sort_type === sort_type ? '' : sort_type
+            this.setState(prevState => ({
+                sorts: {
+                    ...prevState.sorts,
+                    type_sort: type_sort,
+                    type_sort_type: sort_type
+                }
+            }))
         } 
     }
 
@@ -89,73 +162,76 @@ export default class LearningTasks extends React.Component {
         }))
     }
     renderTasks = () => {
-        let tasks = this.sortTasks();
+        let tasks = this.sortTasks(this.state.sorts, this.state.data);
         return (
             <div className="container">
-                {`You currently have ${this.overdue} overdue learning tasks`}
+                {`You currently have ${this.config.status_amounts.overdue} overdue learning tasks`}
                 <br/>
-                {`You currently have ${this.late} late learning tasks`}
+                {`You currently have ${this.config.status_amounts.late} late learning tasks`}
                 <br/>
-                {`You currently have ${this.pending} pending learning tasks`}
+                {`You currently have ${this.config.status_amounts.pending} pending learning tasks`}
                 <br/>
-                {`You currently have ${this.ontime} on time learning tasks`}
+                {`You currently have ${this.config.status_amounts.ontime} on time learning tasks`}
                 <br/>
-                <Button type="button" onClick={() => this.handleSortChange("name")}>Sort by name</Button>
-                <Button type="button" onClick={() => this.setState({subject_sort: false, subject_sort_type: '', name_sort: false, name_sort_type: 0, date_sort: false, date_sort_type: 0, status_sort: false, status_sort_type: '', empty_tasks: false, type_sort: false, type_sort_type: '',})}>Reset sort</Button>
-                <Button type="button" onClick={() => this.handleSortChange("date")}>Sort by date</Button>
+                <Button type="button" onClick={() => this.handleSortChange("name", this.state.sorts)}>Sort by name</Button>
+                <Button type="button" onClick={() => this.resetSort()}>Reset sort</Button>
+                <Button type="button" onClick={() => this.handleSortChange("date", this.state.sorts)}>Sort by date</Button>
                 <DropdownButton id="task-type-sort" title="Sort by task type">
-                    {this.types.map((type, index) => 
-                        <Dropdown.Item onClick={() => this.handleSortChange("type", type)} key={index}>
+                    {this.config.types.map((type, index) => 
+                        <Dropdown.Item onClick={() => this.handleSortChange("type", this.state.sorts, type)} key={index}>
                             {type.toUpperCase()}
                         </Dropdown.Item>
                     )}
                 </DropdownButton>
                 <DropdownButton id="class-sort" title="Sort by class">
-                    {this.classes.map((class_code, index) => 
-                        <Dropdown.Item onClick={() => this.handleSortChange("subject", class_code)} key={index}>
+                    {this.config.classes.map((class_code, index) => 
+                        <Dropdown.Item onClick={() => this.handleSortChange("subject", this.state.sorts, class_code)} key={index}>
                             {class_code}
                         </Dropdown.Item>
                     )}
                 </DropdownButton>
                 <DropdownButton id="status-sort" title="Sort by submission status">
-                    {this.statuses.map((status, index) => 
-                        <Dropdown.Item onClick={() => this.handleSortChange("status", status)} key={index}>
+                    {this.config.statuses.map((status, index) => 
+                        <Dropdown.Item onClick={() => this.handleSortChange("status", this.state.sorts, status)} key={index}>
                             {status}
                         </Dropdown.Item>
                     )}
                 </DropdownButton>
                 {tasks.length <= 0 ? "No tasks" : 
-                    <ListGroup variant="flush" className="border-bottom scrollarea">
-                        {tasks.map((task, index) => (
-                            <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)}>
-                                <div className="d-flex w-100 align-items-center justify-content-between">
-                                    <strong className="mb-1">
-                                        {task.name}
-                                      </strong>
-                                    <small>
-                                        Due by {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
-                                      </small>
-                                </div>
-                                <div className="d-flex w-100 align-items-center justify-content-between">
-                                    <div className="mb-1">
-                                        {task.subject_name} - {task.subject_code}
-                                    </div>
-                                    <span>
-                                        <small>
-                                            {"Submission Status: " + task.submission_status}
-                                        </small>
-                                        <Image src={task.submission_svg_link} alt={task.submission_status} width="25" height="25"/>
-                                    </span>
-                                </div> 
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
+                    
+                        <ListGroup variant="flush" className="scrollarea">
+                            {tasks.map((task, index) => (
+                                <Stack gap={6}>
+                                    <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)} key={index}>
+                                        <div className="d-flex w-100 align-items-center justify-content-between">
+                                            <strong className="mb-1">
+                                                {task.name}
+                                              </strong>
+                                            <small>
+                                                Due by {new Date(task.individual_due_date).toLocaleDateString("en-US", this.config.options)}
+                                              </small>
+                                        </div>
+                                        <div className="d-flex w-100 align-items-center justify-content-between">
+                                            <div className="mb-1">
+                                                {task.subject_name} - {task.subject_code}
+                                            </div>
+                                            <span>
+                                                <small>
+                                                    {"Submission Status: " + task.submission_status}
+                                                </small>
+                                                <Image src={task.submission_svg_link} alt={task.submission_status} width="25" height="25"/>
+                                            </span>
+                                        </div> 
+                                    </ListGroup.Item>
+                                </Stack>
+                            ))}
+                        </ListGroup>
                 }
             </div>
         )
     }
     renderOffcanvas = () => {
-        let tasks = this.data;
+        let tasks = this.state.data;
         return (
             <div>
                 {tasks.map((task, index) => 
@@ -168,7 +244,7 @@ export default class LearningTasks extends React.Component {
                             <br/>
                             Submission status: {task.submission_status}
                             <br/>
-                            Due date: {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
+                            Due date: {new Date(task.individual_due_date).toLocaleDateString("en-US", this.config.options)}
                             <br/>
                             <br/>
                             Description:
@@ -189,7 +265,7 @@ export default class LearningTasks extends React.Component {
                             Submissions: {task.submissions === "None" ? "None" : null}
                             {task.submissions !== "None" ? task.submissions.map((submission, index) => 
                                 <div>
-                                    <a key={index }href={submission.link}>{submission.name}</a>
+                                    <a key={index} href={submission.link}>{submission.name}</a>
                                     <br/>
                                 </div>
                             ) : null}
@@ -199,56 +275,60 @@ export default class LearningTasks extends React.Component {
             </div>
         )
     }
-    sortTasks = () => {
-        let tasks = this.data;
-        if (this.state.status_sort === true) {
+    sortTasks = (sorts, data) => {
+        let tasks = data;
+        if (sorts.status_sort === true) {
             tasks = tasks.filter(i => {
-                return i.submission_status === this.state.status_sort_type;
+                return i.submission_status === sorts.status_sort_type;
             })
         }
-        if (this.state.subject_sort === true) {
+        if (sorts.subject_sort === true) {
             tasks = tasks.filter(i => {
-                return i.subject_code === this.state.subject_sort_type;
+                return i.subject_code === sorts.subject_sort_type;
             })
         }
-        if (this.state.type_sort === true) {
+        if (sorts.type_sort === true) {
             tasks = tasks.filter(i => {
-                return (i.name.toLowerCase()).includes(this.state.type_sort_type);
+                return (i.name.toLowerCase()).includes(sorts.type_sort_type);
             })
         }
-        if (this.state.name_sort === true) {
-            if (this.state.name_sort_type === 0) {
-                tasks = tasks.sort((a,b) => 
-                    (a.name < b.name) - (a.name > b.name)
+        if (sorts.name_sort === true) {
+            if (sorts.name_sort_type === 0) {
+                tasks = tasks.sort((a,b) => {
+                    return (a.name < b.name) - (a.name > b.name)
+            }
                 ) 
             } else {
-                tasks = tasks.sort((a,b) => 
-                    (a.name > b.name) - (a.name < b.name)
-                ) 
+                tasks = tasks.sort((a,b) => {
+                    return (a.name > b.name) - (a.name < b.name)
+                })  
             }       
         }
-        if (this.state.date_sort === true) {
-            if (this.state.date_sort_type === 0) {
-                tasks = tasks.sort((a,b) => 
-                    (a.individual_due_date < b.individual_due_date) - (a.individual_due_date > b.individual_due_date)
-                )
+        if (sorts.date_sort === true) {
+            if (sorts.date_sort_type === 0) {
+                tasks = tasks.sort((a,b) => {
+                    return (a.individual_due_date < b.individual_due_date) - (a.individual_due_date > b.individual_due_date)
+                })
             } else {
-                tasks = tasks.sort((a,b) => 
-                    (a.individual_due_date > b.individual_due_date) - (a.individual_due_date < b.individual_due_date)
-                )
+                tasks = tasks.sort((a,b) => {
+                    return (a.individual_due_date > b.individual_due_date) - (a.individual_due_date < b.individual_due_date)
+                })
             }
+        }
+        if (!sorts.name_sort && !sorts.date_sort && !sorts.subject_sort && !sorts.status_sort && !sorts.type_sort) {
+            tasks = this.state.data;
         }
         return tasks;
     }
     renderOverdueTasks = () => {
-        let tasks = this.data.filter(i => {
+        let tasks = this.state.data.filter(i => {
             return i.submission_status === "Overdue"
         })
         return (
             <div>
                 <ListGroup variant="flush" className="border-bottom scrollarea">
                     {tasks.map((task, index) =>
-                        <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)} className="lh-tight">
+                        <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)} className="lh-tight" key={index}>
                                 <div className="d-flex w-100 align-items-center justify-content-between">
                                     <strong className="mb-1">
                                         {task.name}
@@ -256,7 +336,7 @@ export default class LearningTasks extends React.Component {
                                 </div>
                                 <div className="d-flex w-100 align-items-center justify-content-between text-center">
                                     <div className="mb-1">
-                                        Due by {new Date(task.individual_due_date).toLocaleDateString("en-us", this.options)}
+                                        Due by {new Date(task.individual_due_date).toLocaleDateString("en-us", this.config.options)}
                                     </div>
                                 </div> 
                         </ListGroup.Item>
@@ -266,7 +346,7 @@ export default class LearningTasks extends React.Component {
         )
     }
     renderOverdueOffcanvas = () => {
-        let tasks = this.data.filter(i => {
+        let tasks = this.state.data.filter(i => {
             return i.submission_status === "Overdue"
         })
         return (
@@ -281,7 +361,7 @@ export default class LearningTasks extends React.Component {
                             <br/>
                             Submission status: {task.submission_status}
                             <br/>
-                            Due date: {new Date(task.individual_due_date).toLocaleDateString("en-US", this.options)}
+                            Due date: {new Date(task.individual_due_date).toLocaleDateString("en-US", this.config.options)}
                             <br/>
                             <br/>
                             Description:
@@ -316,8 +396,8 @@ export default class LearningTasks extends React.Component {
     render() {
         return (
             <div>
-                {this.renderType === "overdue" ? this.renderOverdueTasks() : this.renderTasks()}
-                {this.renderType === "overdue" ? this.renderOverdueOffcanvas() : this.renderOffcanvas()}
+                {this.config.renderType === "overdue" ? this.renderOverdueTasks() : this.renderTasks()}
+                {this.config.renderType === "overdue" ? this.renderOverdueOffcanvas() : this.renderOffcanvas()}
             </div>
         )
     }

@@ -43,7 +43,7 @@ class Test extends React.Component {
             [event.target.name]: event.target.value
         })
     }
-    studentNavbar = () => {
+    renderStudentNavbar = () => {
         return (
             <Navbar bg="dark" variant="dark" expand="lg">
                     <Navbar.Brand>
@@ -71,7 +71,7 @@ class Test extends React.Component {
                 </Navbar>
         )
     }
-    visitorNavbar = () => {
+    renderVisitorNavbar = () => {
         return (
             <Navbar bg="dark" variant="dark" expand="lg">
                 <Navbar.Brand>
@@ -99,21 +99,21 @@ class Test extends React.Component {
             </Navbar>
         )
     }
-    about = () => {
+    renderAbout = () => {
         return (
             <div>
                 <h1>About</h1>
             </div>
         ) 
     }
-    pricing = () => {
+    renderPricing = () => {
         return (
             <div>
                 <h1>Pricing</h1>
             </div>
         )
     }
-    dashboard = () => {
+    renderDashboard = () => {
         return (
             <div>
                 <h1>Dashboard</h1>
@@ -134,35 +134,35 @@ class Test extends React.Component {
             </div>
         )
     }
-    studentinfo = () => {
+    renderStudentInfo = () => {
         return (
             <div>
                 <h1>Student Info</h1>
             </div>
         )
     }
-    schedule = () => {
+    renderSchedule = () => {
         return (
             <div>
                 <h1>Schedule</h1>
             </div>
         )
     }
-    home = () => {
+    renderHome = () => {
         return (
             <div>
                 <h1>Home</h1>
             </div>
         )
     }
-    reviews = () => {
+    renderReviews = () => {
         return (
             <div>
                 <h1>Reviews</h1>
                 <Container>
-                    <Stack gap={2}>
+                    <Stack gap={3}>
                     {this.review.map((review, index) => 
-                        <Row className="border">
+                        <Row className="border" key={index}>
                             <Col sm={3}>
                                 <Image src={review.image} height="80" width="100"/>
                                 <strong>
@@ -188,7 +188,7 @@ class Test extends React.Component {
             </div>
         ); 
     }
-    notLoggedIn = () => {
+    renderNotLoggedIn = () => {
         return (
             <div>
                 <h1>You are not logged in</h1>
@@ -201,7 +201,7 @@ class Test extends React.Component {
         }
         return (
             <Router>
-                {this.state.navbar ? this.studentNavbar() : this.visitorNavbar()}
+                {this.state.navbar ? this.renderStudentNavbar() : this.renderVisitorNavbar()}
                 {!this.state.navbar ? (
                     <Offcanvas show={this.state.show} onHide={this.handleClose}>
                         <Offcanvas.Header closeButton>
@@ -222,28 +222,28 @@ class Test extends React.Component {
                 ) : null}
                 <Switch>
                     <Route exact path="/about">
-                        {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.about()}
+                        {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.renderAbout()}
                     </Route>
                     <Route exact path="/pricing">
-                        {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.pricing()}
+                        {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.renderPricing()}
                     </Route>
                     <Route exact path="/dashboard">
-                        {this.state.loggedIn ? this.dashboard() : this.notLoggedIn()}
+                        {this.state.loggedIn ? this.renderDashboard() : this.renderNotLoggedIn()}
                     </Route>
                     <Route exact path="/reviews">
-                    {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.reviews()}
+                    {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.renderReviews()}
                     </Route>
                     <Route exact path="/dashboard/learningtasks">
-                        {this.state.loggedIn ? <LearningTasks data={this.state.data}/> : this.notLoggedIn()}
+                        {this.state.loggedIn ? <LearningTasks data={this.state.data}/> : this.renderNotLoggedIn()}
                     </Route>
                     <Route exact path="/dashboard/studentinfo">
-                        {this.state.loggedIn? this.studentinfo() : this.notLoggedIn()}
+                        {this.state.loggedIn? this.renderStudentInfo() : this.renderNotLoggedIn()}
                     </Route>
                     <Route exact path="/dashboard/schedule">
-                        {this.state.loggedIn ? this.schedule() : this.notLoggedIn()}
+                        {this.state.loggedIn ? this.renderSchedule() : this.renderNotLoggedIn()}
                     </Route>
                     <Route exact path="/">
-                        {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.home()}
+                        {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.renderHome()}
                     </Route>
                 </Switch>
             </Router>
