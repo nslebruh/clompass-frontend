@@ -202,7 +202,7 @@ export default class LearningTasks extends React.Component {
                         <ListGroup variant="flush" className="scrollarea">
                             {tasks.map((task, index) => (
                                 <Stack gap={6}>
-                                    <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)} key={index}>
+                                    <ListGroup.Item as="button" action onClick={() => this.handleOffcanvasChange(task.id, true)} key={task.id}>
                                         <div className="d-flex w-100 align-items-center justify-content-between">
                                             <strong className="mb-1">
                                                 {task.name}
@@ -235,7 +235,7 @@ export default class LearningTasks extends React.Component {
         return (
             <div>
                 {tasks.map((task, index) => 
-                    <Offcanvas show={this.state.offcanvasList[task.id]} onHide={() => this.handleOffcanvasChange(task.id, false)} key={index}>
+                    <Offcanvas show={this.state.offcanvasList[task.id]} onHide={() => this.handleOffcanvasChange(task.id, false)} key={task.id}>
                     <Offcanvas.Header closeButton>
                     <Offcanvas.Title>{task.name}</Offcanvas.Title>
                     </Offcanvas.Header>
@@ -276,7 +276,7 @@ export default class LearningTasks extends React.Component {
         )
     }
     sortTasks = (sorts, data) => {
-        let tasks = data;
+        let tasks = new Array(...data);
         if (sorts.status_sort === true) {
             tasks = tasks.filter(i => {
                 return i.submission_status === sorts.status_sort_type;
