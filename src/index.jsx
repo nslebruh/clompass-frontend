@@ -15,7 +15,9 @@ class Test extends React.Component {
             password: '',
             show: false,
             navbar: false,
-            data: [],
+            ltdata: [],
+            profiledata: [],
+            scheduledata: [],
         };
         this.review =[{name: "Totally real person", image: "https://cdn.jsdelivr.net/gh/nslebruh/clompass-backend@main/iQbN47Oqc8mRdHd_ecgmES2WIYPEkMP5JXdUNGbBsY0.jpg", desc: "As a totally real person, Clompass has helped me overcome my water addiction. Thank you Clompass!", helpful: "27"},{name: "even more real person", image: "https://media1.cgtrader.com/variants/Bu26ZmqBr3399MPjb9jZ83Kr/e44aa6a6359827c9089792cde0c079681b83d3b5c3037cc0525c25607e54355b/d75944ab-4691-4a56-93db-333698a7da50.jpg", desc: "Clompass cool", "helpful": "402"},{name: "Barack Obama", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/800px-President_Barack_Obama.jpg", desc: "Hello it is I Barack Obama. Clompass is a great American asset.",  helpful: "The entire American population"},{name: "Vladmir Putin", image: "https://thehill.com/sites/default/files/styles/thumb_small_article/public/putinvladimir_011519getty_lead.jpg?itok=7czClh2z", desc: "Это лучший софт с тех пор, как мы вторглись в Украину.", helpful: "Ukraine"}];
         this.options = {weekday: "long", year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "2-digit", second: "2-digit"};
@@ -33,9 +35,9 @@ class Test extends React.Component {
     }
 
     handleSubmit = () => {
-        fetch(`https://api.clompass.com/puppeteer?username=${this.state.username}&password=${this.state.password}`)
+        fetch(`https://api.clompass.com/puppeteer?username=${window.btoa(this.state.username)}&password=${window.btoa(this.state.password)}`)
         .then(res => res.json())
-        .then(data => this.setState({data: data, loggedIn: true, navbar: true, show: false, loggingIn: false}))
+        .then(data => this.setState({ltdata: data.learning_tasks, profiledata: data.profile, scheduledata: data.schedule, loggedIn: true, navbar: true, show: false, loggingIn: false}))
     }
     
     handleChange = (event) => {
@@ -86,7 +88,7 @@ class Test extends React.Component {
                         <LinkContainer to="/about">
                             <Nav.Link>About</Nav.Link>
                         </LinkContainer>
-                        {this.state.loggedIn !== true ? <Nav.Link onClick={this.handleShow}>Login</Nav.Link> : <Nav.Link onClick={() => {this.setState({loggedIn: false, data: [], username: '', password: ''})}}>Log out</Nav.Link>}
+                        {this.state.loggedIn !== true ? <Nav.Link onClick={this.handleShow}>Login</Nav.Link> : <Nav.Link onClick={() => {this.setState({loggedIn: false, ltdata: [], profiledata: [], scheduledata: [], username: '', password: ''})}}>Log out</Nav.Link>}
                         <LinkContainer to="/pricing">
                             <Nav.Link>Pricing</Nav.Link>
                         </LinkContainer>
@@ -103,6 +105,7 @@ class Test extends React.Component {
         return (
             <div>
                 <h1>About</h1>
+                <p>Clompass is a completely free alternative way to view your compass.education information</p>
             </div>
         ) 
     }
@@ -110,6 +113,8 @@ class Test extends React.Component {
         return (
             <div>
                 <h1>Pricing</h1>
+                <p>It free dum dum</p>
+                <p>I make no moners :(</p>
             </div>
         )
     }
@@ -124,7 +129,7 @@ class Test extends React.Component {
                       </Col>
                       <Col className="text-center">
                         <h1>Overdue learning tasks</h1> 
-                        <LearningTasks data={this.state.data} renderType="overdue" /> 
+                        <LearningTasks data={this.state.ltdata} renderType="overdue" /> 
                       </Col>
                       <Col className="text-center">
                         My Tasks
@@ -234,7 +239,7 @@ class Test extends React.Component {
                     {this.state.loggedIn && this.state.navbar ? <Redirect to="/dashboard"/> : this.renderReviews()}
                     </Route>
                     <Route exact path="/dashboard/learningtasks">
-                        {this.state.loggedIn ? <LearningTasks data={this.state.data}/> : this.renderNotLoggedIn()}
+                        {this.state.loggedIn ? <LearningTasks data={this.state.ltdata}/> : this.renderNotLoggedIn()}
                     </Route>
                     <Route exact path="/dashboard/studentinfo">
                         {this.state.loggedIn? this.renderStudentInfo() : this.renderNotLoggedIn()}
